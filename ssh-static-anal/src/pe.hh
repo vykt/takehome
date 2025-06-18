@@ -3,15 +3,14 @@
 #include <cstdint>
 
 
-/*
- *  NOTE: Padding implies both literal padding and simply fields that are irrelevant.
- */
+using byte = unsigned char;
 
 
 namespace pe {
 
-
-using byte = unsigned char;
+/*
+ *  NOTE: Padding implies both literal padding and simply fields that are irrelevant.
+ */
 
 const constexpr byte msdos_magic[0x2] = {0x4d, 0x5a};
 const constexpr byte nt_magic[0x4] = {0x50, 0x45, 0x0, 0x0};
@@ -85,6 +84,5 @@ using sect_hdr = struct {
     uint32_t file_off;
     byte _pad_1[0x10];
 } __attribute__((packed));
-
 
 } //end namespace `pe`
