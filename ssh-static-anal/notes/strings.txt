@@ -1,0 +1,20 @@
+[From RFC 4253]:
+
+Crypto schemes:
+	3des-cbc <required>
+	aes128-cbc <recommended>
+
+
+[From RFC 8268]:
+
+Crypto schemes:
+	diffie-hellman-group14-sha256 <strongly recommended>
+    diffie-hellman-group??-sha512
+	rsa-sha2-256 <required>
+
+	
+Disassembly:
+
+"SSH" = 535348h = (x86) push ebx; push ebx; dec eax;
+				= <invalid or obscure in arm & risc-v>
+				
