@@ -10,7 +10,7 @@ else
 	CXXFLAGS += -O2 -flto
 endif
 
-SRC=cmn.cc main.cc
+SRC=cmn.cc main.cc pe.cc scan.cc 
 OBJ=${SRC:%.c=%.o}
 TGT=ssh-anal
 

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <optional>
+#include <vector>
 #include <cstdint>
+#include "cmn.hh"
 
 
 using byte = unsigned char;
@@ -8,9 +11,7 @@ using byte = unsigned char;
 
 namespace pe {
 
-/*
- *  NOTE: Padding implies both literal padding and simply fields that are irrelevant.
- */
+// -- [PE headers]
 
 const constexpr byte msdos_magic[0x2] = {0x4d, 0x5a};
 const constexpr byte nt_magic[0x4] = {0x50, 0x45, 0x0, 0x0};
@@ -21,14 +22,14 @@ const constexpr byte mach_x86_64[0x2] = {0x88, 0x64};
 const constexpr byte img_opt_pe_magic[0x2] = {0x01, 0x0b};
 const constexpr byte img_opt_pep_magic[0x2] = {0x02, 0x0b};
 
-using msdos_stub = struct {
+using msdos_hdr = struct {
     byte magic[0x2];
     byte _pad_0[0x3a];
     uint32_t e_lfanew;
 } __attribute__((packed));
 
 using img_hdr = struct {
-    byte mach[0x2];    //ignored by windows PE loader
+    byte mach[0x2];
     uint16_t sect_num;
     byte _pad_0[0x4];
     uint32_t symtab_ptr;
@@ -51,7 +52,7 @@ using img_opt_hdr64 = struct {
     byte _pad_3[0xb0];
 } __attribute__((packed));
 
-using img_opt_hdr = struct {
+using img_opt_hdr32 = struct {
     byte magic[2];
     byte _pad_0[2];
     uint32_t text_sz;
@@ -71,11 +72,16 @@ using nt_hdr64 = struct {
     img_opt_hdr64 img_opt_hdr64;
 } __attribute__((packed));
 
-using nt_hdr = struct {
+using nt_hdr32 = struct {
     byte magic[0x4];
     img_hdr img_hdr;
-    img_opt_hdr img_opt_hdr;
+    img_opt_hdr32 img_opt_hdr32;
 } __attribute__((packed));
+
+using nt_hdr = union {
+    nt_hdr64 v64;
+    nt_hdr32 v32;
+};
 
 using sect_hdr = struct {
     char name[0x8];
@@ -84,5 +90,30 @@ using sect_hdr = struct {
     uint32_t file_off;
     byte _pad_1[0x10];
 } __attribute__((packed));
+
+
+// --- [Misc.]
+
+struct scan_ent {
+
+    _PRIVATE:
+    off_t off;
+    uint32_t sz;
+
+    public:
+    scan_ent(off_t _off, size_t _sz) noexcept : off(_off), sz(_sz) {}
+    inline off_t get_off() const noexcept { return this->off; }
+    inline size_t get_sz() const noexcept { return this->sz; }    
+};
+
+const constexpr int omit_sect_num = 4;
+const constexpr char * omit_sect[omit_sect_num] = {
+    "pdata",
+    "xdata",
+    "drective",
+    "reloc"
+};
+
+std::optional<std::vector<scan_ent>> get_scan_set(byte * file_map);
 
 } //end namespace `pe`

@@ -1,6 +1,5 @@
 #include "cmn.hh"
 #include "pe.hh"
-#include "hrc.hh"
 
 #include <iostream>
 
