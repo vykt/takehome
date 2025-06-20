@@ -6,9 +6,6 @@
 #include "cmn.hh"
 
 
-using byte = unsigned char;
-
-
 namespace pe {
 
 // -- [PE headers]
@@ -68,14 +65,14 @@ using img_opt_hdr32 = struct {
 
 using nt_hdr64 = struct {
     byte magic[0x4];
-    img_hdr img_hdr;
-    img_opt_hdr64 img_opt_hdr64;
+    img_hdr img_h;
+    img_opt_hdr64 img_opt_h64;
 } __attribute__((packed));
 
 using nt_hdr32 = struct {
     byte magic[0x4];
-    img_hdr img_hdr;
-    img_opt_hdr32 img_opt_hdr32;
+    img_hdr img_h;
+    img_opt_hdr32 img_opt_h32;
 } __attribute__((packed));
 
 using nt_hdr = union {
@@ -114,6 +111,6 @@ const constexpr char * omit_sect[omit_sect_num] = {
     "reloc"
 };
 
-std::optional<std::vector<scan_ent>> get_scan_set(byte * file_map);
+std::optional<std::vector<scan_ent>> get_scan_set();
 
 } //end namespace `pe`

@@ -45,7 +45,10 @@ static void _scan_sect(byte * file_map, bool sig_found[sig_sz], const pe::scan_e
     off_t sig_off[sig_sz] = {0};
     
     //for each byte in section
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wsign-compare"
     for (off_t i = 0; i < ent.get_sz(); ++i) {
+    #pragma GCC diagnostic pop
 
         //for each signature being scanned for
         cur = *(file_map + ent.get_off() + i);
@@ -65,7 +68,6 @@ static void _scan_sect(byte * file_map, bool sig_found[sig_sz], const pe::scan_e
 
 [[nodiscard]] int scan::do_scan(byte * file_map, const std::vector<pe::scan_ent> & scan_set) noexcept {
 
-    int ret;
     int wgt;
     bool done;
     bool sig_found[sig_sz] = {0};
