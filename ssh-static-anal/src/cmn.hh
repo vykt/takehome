@@ -28,6 +28,7 @@ extern file_state state;
 
 extern __thread int err;
 const constexpr int err_exec = 1;
-const constexpr int err_pe = 2;
+const constexpr int err_pe   = 2;
+const constexpr int err_scan = 3;
 
 } //end namespace `cmn`

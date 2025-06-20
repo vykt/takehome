@@ -13,8 +13,8 @@ namespace pe {
 const constexpr byte msdos_magic[0x2] = {0x4d, 0x5a};
 const constexpr byte nt_magic[0x4] = {0x50, 0x45, 0x0, 0x0};
 
-const constexpr byte mach_x86[0x2] = {0x01, 0x4c};
-const constexpr byte mach_x86_64[0x2] = {0x88, 0x64};
+const constexpr byte mach_x86[0x2] = {0x4c, 0x01};
+const constexpr byte mach_x86_64[0x2] = {0x64, 0x86};
 
 const constexpr byte img_opt_pe_magic[0x2] = {0x01, 0x0b};
 const constexpr byte img_opt_pep_magic[0x2] = {0x02, 0x0b};
@@ -43,7 +43,7 @@ using img_opt_hdr64 = struct {
     uint32_t bss_sz;
     byte _pad_1[0x14];
     uint32_t file_align;
-    uint32_t _pad_2[0x10];
+    byte _pad_2[0x10];
     uint32_t img_sz;
     uint32_t hdr_sz;
     byte _pad_3[0xb0];
@@ -57,7 +57,7 @@ using img_opt_hdr32 = struct {
     uint32_t bss_sz;
     byte _pad_1[0x14];
     uint32_t file_align;
-    uint32_t _pad_2[0x10];
+    byte _pad_2[0x10];
     uint32_t img_sz;
     uint32_t hdr_sz;
     byte _pad_3[0xa0];
@@ -103,12 +103,11 @@ struct scan_ent {
     inline size_t get_sz() const noexcept { return this->sz; }    
 };
 
-const constexpr int omit_sect_num = 4;
+const constexpr int omit_sect_num = 3;
 const constexpr char * omit_sect[omit_sect_num] = {
-    "pdata",
-    "xdata",
-    "drective",
-    "reloc"
+    ".pdata",
+    ".xdata",
+    ".reloc"
 };
 
 std::optional<std::vector<scan_ent>> get_scan_set();

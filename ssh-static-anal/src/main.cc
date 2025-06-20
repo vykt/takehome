@@ -1,7 +1,5 @@
-#include "cmn.hh"
-#include "pe.hh"
-
 #include <optional>
+#include <pthread.h>
 #include <vector>
 #include <iostream>
 
@@ -10,6 +8,10 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+
+#include "cmn.hh"
+#include "pe.hh"
+#include "scan.hh"
 
 
 static struct option _long_opts[] = {
@@ -75,7 +77,10 @@ static void _teardown_file() noexcept {
 
 int main(int argc, char ** argv) {
 
+    int wgt;
+    bool sig_found[scan::sig_sz] = {0};
     const char * file_path;
+
 
     file_path = _process_args(argc, argv);
     if (!file_path) exit(-1);
@@ -83,6 +88,19 @@ int main(int argc, char ** argv) {
     if (_setup_file(file_path)) exit(-1);
 
     std::optional<std::vector<pe::scan_ent>> scan_set = pe::get_scan_set();
+    if (!scan_set.has_value()) {
+        std::cerr << "Failed to produce a scan set." << std::endl;
+        cmn::err = cmn::err_scan;
+        goto _cleanup;
+    }
 
+    wgt = scan::do_scan(*scan_set, sig_found);
+    std::cout << (wgt > scan::sig_thresh ? "Is an SSH client." : "Not an SSH client.") << std::endl;
+    for (int i = 0; i < scan::sig_sz; ++i)
+        std::cout << "  " << scan::sig[i] << (sig_found[i] ? "true" : "false") << std::endl;
+    
+    _cleanup:
     _teardown_file();
+
+    return cmn::err ? -1 : 0;
 }

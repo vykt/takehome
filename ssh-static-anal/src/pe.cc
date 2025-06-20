@@ -1,5 +1,6 @@
 #include <optional>
 #include <vector>
+#include <iostream>
 
 #include <cstring>
 #include <cstddef>
@@ -44,13 +45,17 @@
 [[nodiscard]] static std::optional<pe::scan_ent>
     _process_sect_hdr(const off_t off) noexcept {
 
+    const char * sym;
     pe::sect_hdr * sect_hdr = reinterpret_cast<pe::sect_hdr *>(cmn::state.map + off);
+    if (cmn::verbose) std::cout << "Found section: " << sect_hdr->name << std::endl;
 
     //skip ommitted sections
-    for (int i = 0; i < pe::omit_sect_num; i += 1)
-        if (strncmp(reinterpret_cast<const char *>(cmn::state.map + off), pe::omit_sect[i], 0x8) == 0) return std::nullopt;
+    for (int i = 0; i < pe::omit_sect_num; i += 1) {
+        sym = reinterpret_cast<const char *>(cmn::state.map + off);
+        if (strncmp(sym, pe::omit_sect[i], 0x8) == 0) return std::nullopt;
+    }
 
-    return pe::scan_ent(reinterpret_cast<off_t>(cmn::state.map + sect_hdr->file_off), sect_hdr->file_sz);
+    return pe::scan_ent(sect_hdr->file_off, sect_hdr->file_sz);
 }
 
 
@@ -75,14 +80,20 @@ std::optional<std::vector<pe::scan_ent>> pe::get_scan_set() {
         sect_hdr_start_off = nt_hdr->v64.img_opt_h64.hdr_sz;
     } else {
         sect_hdr_num = nt_hdr->v32.img_h.sect_num;
-        sect_hdr_start_off = nt_hdr->v32.img_opt_h32.hdr_sz;
+        sect_hdr_start_off = (uintptr_t) &nt_hdr->v32.img_opt_h32 - (uintptr_t) msdos_hdr
+                             + nt_hdr->v32.img_h.opt_hdr_sz;
     }
 
     for (int i = 0; i < sect_hdr_num; i += 1) {
-
         ent = _process_sect_hdr(sect_hdr_start_off + (sizeof(pe::sect_hdr) * i));
         if (ent.has_value()) scan_set.push_back(*ent);
     }
 
+    if (cmn::verbose) {
+        std::cout << "scan_set size: " << scan_set.size() << std::hex << std::endl;
+        for (auto it = scan_set.cbegin(); it != scan_set.cend(); ++it)
+            std::cout << "off: 0x" << it->get_off() << " sz: 0x" << it->get_sz() << std::endl;
+        std::cout << std::dec;
+    }
     return scan_set;
 } 
