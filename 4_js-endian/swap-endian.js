@@ -1,5 +1,3 @@
-// javascript is a mistake
-
 function swap_end(num) {
 
     var components = [0,0,0,0];
