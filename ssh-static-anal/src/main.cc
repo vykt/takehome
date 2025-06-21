@@ -95,9 +95,11 @@ int main(int argc, char ** argv) {
     }
 
     wgt = scan::do_scan(*scan_set, sig_found);
-    std::cout << (wgt > scan::sig_thresh ? "Is an SSH client." : "Not an SSH client.") << std::endl;
+    std::cout << "[result]" << std::endl;
+    std::cout << (wgt > scan::sig_thresh ? "Is an SSH client.\n" : "Not an SSH client.\n") << std::endl;
+    std::cout << "[heuristics]" << std::endl;
     for (int i = 0; i < scan::sig_sz; ++i)
-        std::cout << "  " << scan::sig[i] << (sig_found[i] ? "true" : "false") << std::endl;
+        std::cout << scan::sig[i] << ": " << (sig_found[i] ? "true" : "false") << std::endl;
     
     _cleanup:
     _teardown_file();

@@ -96,11 +96,13 @@ struct scan_ent {
     _PRIVATE:
     off_t off;
     uint32_t sz;
+    const char * name;
 
     public:
-    scan_ent(off_t _off, size_t _sz) noexcept : off(_off), sz(_sz) {}
+    scan_ent(off_t _off, size_t _sz, const char * _name) noexcept : off(_off), sz(_sz), name(_name) {}
     inline off_t get_off() const noexcept { return this->off; }
     inline size_t get_sz() const noexcept { return this->sz; }    
+    inline const char * get_name() const noexcept { return this->name; }
 };
 
 const constexpr int omit_sect_num = 3;

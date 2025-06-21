@@ -42,6 +42,7 @@ const constexpr int sig_wgt[sig_sz] = {
 };
 const constexpr int sig_thresh = 10; 
 
+void dbg_scan_sect(bool sig_found[scan::sig_sz]);
 [[nodiscard]] int do_scan(const std::vector<pe::scan_ent> & scan_set, bool sig_found[sig_sz]) noexcept;
 
 } //end namespace `scan`
