@@ -1,3 +1,2 @@
 putty.exe : PuTTY SSH & telnet client.
-snes9x    : SNES emulator.
-sshnet    : SSH.net DLL
+snes9x    : SNES emulator (not SSH).
